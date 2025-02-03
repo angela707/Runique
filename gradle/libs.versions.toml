@@ -15,6 +15,9 @@ ksp = "2.1.0+"
 timber = "5.0.1"
 compose-coil = "2.6.0"
 bson = "4.11.1"
+room = "2.6.1"
+androidTools = "31.8.0"
+
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -58,6 +61,13 @@ timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "tim
 
 # db
 org-mongodb-bson = { group = "org.mongodb", name = "bson", version.ref = "bson" }
+
+# Gradle
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
