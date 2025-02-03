@@ -13,11 +13,11 @@ appcompat = "1.7.0"
 material = "1.12.0"
 ksp = "2.1.0+"
 timber = "5.0.1"
-compose-coil = "2.6.0"
+compose-coil = "2.7.0"
 bson = "4.11.1"
 room = "2.6.1"
 androidTools = "31.8.0"
-desugar_jdk_libs = "2.1.3"
+desugar_jdk_libs = "2.1.4"
 
 
 # Project versions
@@ -71,7 +71,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 
-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -83,6 +83,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 #convention plugins
 runique-android-application = { id = "runique.android.application" }
+runique-android-application-compose = { id = "runique.android.application.compose" }
 
 [bundles]
 compose = [

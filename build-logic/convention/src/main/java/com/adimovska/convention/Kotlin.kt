@@ -28,7 +28,7 @@ internal fun Project.configureKotlinAndroid(
     configureKotlin()
 
     dependencies {
-        "coreLibraryDesugaring"(libs.findLibrary("desugar.jdk.libs").get()) //make java apis downwards compatible
+        "coreLibraryDesugaring"(libs.findLibrary("desugar-jdk-libs").get()) //make java apis downwards compatible
     }
 }
 
