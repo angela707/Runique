@@ -1,3 +1,5 @@
+import com.adimovska.convention.ExtensionType
+import com.adimovska.convention.configureBuildTypes
 import com.adimovska.convention.configureKotlinAndroid
 import com.adimovska.convention.getPluginId
 import com.adimovska.convention.libs
@@ -24,7 +26,11 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     versionName = libs.findVersion("projectVersionName").get().toString()
                 }
 
-                configureKotlinAndroid(this)
+                configureKotlinAndroid(commonExtension = this)
+                configureBuildTypes(
+                    commonExtension = this,
+                    extensionType = ExtensionType.APPLICATION
+                )
             }
         }
     }
