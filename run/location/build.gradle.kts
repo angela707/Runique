@@ -34,6 +34,9 @@ android {
 
 dependencies {
 
+    implementation(projects.core.domain)
+    implementation(projects.run.domain)
+
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
 

@@ -33,6 +33,9 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(projects.run.domain)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.coil)
     implementation(libs.timber)

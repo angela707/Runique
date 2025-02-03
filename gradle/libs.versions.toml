@@ -14,6 +14,7 @@ material = "1.12.0"
 ksp = "2.1.0+"
 timber = "5.0.1"
 compose-coil = "2.6.0"
+bson = "4.11.1"
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -54,6 +55,9 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 # Logging
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
+
+# db
+org-mongodb-bson = { group = "org.mongodb", name = "bson", version.ref = "bson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
