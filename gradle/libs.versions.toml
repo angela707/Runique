@@ -84,6 +84,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 #convention plugins
 runique-android-application = { id = "runique.android.application" }
 runique-android-application-compose = { id = "runique.android.application.compose" }
+runique-android-library = { id = "runique.android.library" }
 
 [bundles]
 compose = [
