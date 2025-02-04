@@ -18,6 +18,7 @@ bson = "4.11.1"
 room = "2.6.1"
 androidTools = "31.8.0"
 desugar_jdk_libs = "2.1.4"
+koin = "4.0.0"
 
 
 # Project versions
@@ -70,6 +71,12 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
+# Koin
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-android-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+
 
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
@@ -81,11 +88,13 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-#convention plugins
+# Convention plugins
 runique-android-application = { id = "runique.android.application" }
 runique-android-application-compose = { id = "runique.android.application.compose" }
 runique-android-library = { id = "runique.android.library" }
 runique-android-library-compose = { id = "runique.android.library.compose" }
+runique-android-feature-ui = { id = "runique.android.feature.ui" }
+
 
 [bundles]
 compose = [
@@ -94,4 +103,23 @@ compose = [
     "androidx-compose-ui-graphics",
     "androidx-compose-ui-tooling",
     "androidx-compose-material3",
+    "androidx-compose-ui-tooling-preview",
+]
+
+compose-debug = [
+    "androidx-compose-ui-tooling",
+    "androidx-compose-ui-test-manifest",
+]
+
+koin = [
+    "koin-core",
+    "koin-android",
+    "koin-android-workmanager"
+]
+
+koin-compose = [
+    "koin-core",
+    "koin-android",
+    "koin-android-workmanager",
+    "koin-androidx-compose"
 ]
