@@ -1,7 +1,9 @@
+import androidx.room.gradle.RoomExtension
 import com.adimovska.convention.getPluginId
 import com.adimovska.convention.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 class AndroidRoomConventionPlugin : Plugin<Project> {
@@ -10,18 +12,17 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
         target.run {
             pluginManager.run {
                 apply(getPluginId("ksp"))
-//                apply(getPluginId("room"))
+                apply(getPluginId("room"))
 
-            }
+                extensions.configure<RoomExtension> {
+                    schemaDirectory("$projectDir/schemas")
+                }
 
-//            extensions.configure<RoomExtension> {
-//                schemaDirectory("$projectDir/schemas")
-//            }
-
-            dependencies {
-                "implementation"(libs.findLibrary("room.runtime").get())
-                "implementation"(libs.findLibrary("room.ktx").get())
-                "ksp"(libs.findLibrary("room.compiler").get())
+                dependencies {
+                    "implementation"(libs.findLibrary("room.runtime").get())
+                    "implementation"(libs.findLibrary("room.ktx").get())
+                    "ksp"(libs.findLibrary("room.compiler").get())
+                }
             }
         }
     }

@@ -19,7 +19,9 @@ room = "2.6.1"
 androidTools = "31.8.0"
 desugar_jdk_libs = "2.1.4"
 koin = "4.0.0"
-
+ktor = "3.0.3"
+ktorClientLogging = "3.0.1"
+org-jetbrains-kotlin-jvm = "2.1.0"
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -82,6 +84,14 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 
+#Ktor
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
@@ -93,6 +103,8 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 
 # Convention plugins
 runique-android-application = { id = "runique.android.application" }
@@ -101,7 +113,8 @@ runique-android-library = { id = "runique.android.library" }
 runique-android-library-compose = { id = "runique.android.library.compose" }
 runique-android-feature-ui = { id = "runique.android.feature.ui" }
 runique-android-room = { id = "runique.android.room" }
-runique-jvm-library = { id = "runique.jvm.library", version = "unspecified" }
+runique-jvm-library = { id = "runique.jvm.library" }
+runique-jvm-ktor = { id = "runique.jvm.ktor" }
 
 [bundles]
 compose = [
@@ -129,4 +142,13 @@ koin-compose = [
     "koin-android",
     "koin-android-workmanager",
     "koin-androidx-compose"
+]
+
+ktor = [
+    "ktor-client-auth",
+    "ktor-client-cio",
+    "ktor-client-content-negotiation",
+    "ktor-client-core",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json"
 ]
