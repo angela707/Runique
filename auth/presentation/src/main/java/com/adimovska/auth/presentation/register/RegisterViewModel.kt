@@ -64,11 +64,7 @@ class RegisterViewModel(
                 }
             }
 
-            RegisterAction.OnLoginClick -> {
-                viewModelScope.launch {
-                    eventChannel.send(RegisterEvent.SignInCLicked)
-                }
-            }
+            else -> Unit
         }
     }
 

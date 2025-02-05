@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.adimovska.auth.domain.PasswordValidationState
 import com.adimovska.auth.domain.UserDataValidator
 import com.adimovska.auth.presentation.R
+import com.adimovska.auth.presentation.login.LoginAction
 import com.adimovska.core.presentation.components.GradientBackground
 import com.adimovska.core.presentation.components.RuniqueActionButton
 import com.adimovska.core.presentation.components.RuniquePasswordTextField
@@ -62,7 +63,13 @@ fun RegisterScreenRoot(
     val state = viewModel.state.collectAsState()
     RegisterScreen(
         state = state.value,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is RegisterAction.OnLoginClick -> onSignInClick()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 
     val context = LocalContext.current
@@ -87,8 +94,6 @@ fun RegisterScreenRoot(
                 ).show()
                 onSuccessfulRegistration()
             }
-
-            RegisterEvent.SignInCLicked -> onSignInClick()
         }
     }
 }
