@@ -1,13 +1,20 @@
 package com.adimovska.auth.presentation.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.adimovska.auth.domain.AuthRepository
 import com.adimovska.auth.domain.UserDataValidator
+import com.adimovska.auth.presentation.R
+import com.adimovska.core.domain.util.DataError
+import com.adimovska.core.domain.util.Result
+import com.adimovska.core.presentation.ui.UiText
+import com.adimovska.core.presentation.ui.asUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
@@ -33,21 +40,17 @@ class LoginViewModel(
             }
 
             is LoginAction.OnEmailChanged -> {
-                val isValidEmail = userDataValidator.isValidEmail(action.email.text)
-
                 _state.update {
                     it.copy(
                         email = action.email,
                         canLogin = userDataValidator.isValidEmail(
-                            email = action.email.toString().trim()
+                            email = action.email.text.trim()
                         ) && state.value.password.text.isNotEmpty()
                     )
                 }
             }
 
             is LoginAction.OnPasswordChanged -> {
-                val passwordValidationState =
-                    userDataValidator.validatePassword(action.password.text)
                 _state.update {
                     it.copy(
                         password = action.password,
@@ -63,6 +66,35 @@ class LoginViewModel(
     }
 
     private fun login() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(isLoggingIn = true)
+            }
+            val result = authRepository.login(
+                email = state.value.email.text.trim(),
+                password = state.value.password.text
+            )
+            _state.update {
+                it.copy(isLoggingIn = false)
+            }
 
+            when (result) {
+                is Result.Error -> {
+                    if (result.error == DataError.Network.UNAUTHORIZED) {
+                        eventChannel.send(
+                            LoginEvent.Error(
+                                UiText.StringResource(R.string.error_email_password_incorrect)
+                            )
+                        )
+                    } else {
+                        eventChannel.send(LoginEvent.Error(result.error.asUiText()))
+                    }
+                }
+
+                is Result.Success -> {
+                    eventChannel.send(LoginEvent.LoginSuccess)
+                }
+            }
+        }
     }
 }
