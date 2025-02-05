@@ -3,6 +3,7 @@ package com.adimovska.runique
 import android.app.Application
 import com.adimovska.auth.data.di.authDataModule
 import com.adimovska.auth.presentation.di.authViewModelModule
+import com.adimovska.core.data.di.coreDataModule
 import com.adimovska.runique.di.appModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -28,6 +29,7 @@ class RuniqueApp: Application() {
                 authDataModule,
                 authViewModelModule,
                 appModule,
+                coreDataModule,
             )
         }
     }

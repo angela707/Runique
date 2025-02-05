@@ -2,6 +2,7 @@
 
 package com.adimovska.auth.presentation.register
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -47,6 +49,7 @@ import com.adimovska.core.presentation.designsystem.Poppins
 import com.adimovska.core.presentation.designsystem.RuniqueDarkRed
 import com.adimovska.core.presentation.designsystem.RuniqueGreen
 import com.adimovska.core.presentation.designsystem.RuniqueTheme
+import com.adimovska.core.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -61,6 +64,33 @@ fun RegisterScreenRoot(
         state = state.value,
         onAction = viewModel::onAction
     )
+
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is RegisterEvent.Error -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    event.error.asString(context),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            RegisterEvent.RegistrationSuccess -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    R.string.registration_successful,
+                    Toast.LENGTH_LONG
+                ).show()
+                onSuccessfulRegistration()
+            }
+
+            RegisterEvent.SignInCLicked -> onSignInClick()
+        }
+    }
 }
 
 @Composable
@@ -125,7 +155,7 @@ private fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 additionalInfo = stringResource(id = R.string.must_be_a_valid_email),
                 keyboardType = KeyboardType.Email,
-                onValueChange = { value->
+                onValueChange = { value ->
                     onAction(RegisterAction.OnEmailChanged(value))
                 }
             )
@@ -139,7 +169,7 @@ private fun RegisterScreen(
                 hint = stringResource(id = R.string.password),
                 title = stringResource(id = R.string.password),
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { value->
+                onValueChange = { value ->
                     onAction(RegisterAction.OnPasswordChanged(value))
                 }
             )
