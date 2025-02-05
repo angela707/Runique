@@ -115,7 +115,7 @@ private fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
             RuniqueTextField(
-                state = state.email,
+                value = state.email,
                 startIcon = EmailIcon,
                 endIcon = if (state.isEmailValid) {
                     CheckIcon
@@ -124,18 +124,24 @@ private fun RegisterScreen(
                 title = stringResource(id = R.string.email),
                 modifier = Modifier.fillMaxWidth(),
                 additionalInfo = stringResource(id = R.string.must_be_a_valid_email),
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email,
+                onValueChange = { value->
+                    onAction(RegisterAction.OnEmailChanged(value))
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             RuniquePasswordTextField(
-                state = state.password,
+                value = state.password,
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = {
                     onAction(RegisterAction.OnTogglePasswordVisibilityClick)
                 },
                 hint = stringResource(id = R.string.password),
                 title = stringResource(id = R.string.password),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { value->
+                    onAction(RegisterAction.OnPasswordChanged(value))
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
 

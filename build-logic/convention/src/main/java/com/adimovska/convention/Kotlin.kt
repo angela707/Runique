@@ -28,6 +28,7 @@ internal fun Project.configureKotlinAndroid(
     configureKotlin()
 
     dependencies {
+        "implementation"(libs.findLibrary("timber").get())
         "coreLibraryDesugaring"(libs.findLibrary("desugar-jdk-libs").get()) //make java apis downwards compatible
     }
 }

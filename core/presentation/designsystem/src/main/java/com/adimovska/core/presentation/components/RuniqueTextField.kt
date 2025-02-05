@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,28 +42,27 @@ import com.adimovska.core.presentation.designsystem.RuniqueTheme
 @Composable
 fun RuniqueTextField(
     modifier: Modifier = Modifier,
-    state: TextFieldState,
+    value: TextFieldValue,
     startIcon: ImageVector?,
     endIcon: ImageVector?,
     hint: String,
     title: String?,
     error: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
-    additionalInfo: String? = null
+    additionalInfo: String? = null,
+    onValueChange: (TextFieldValue) -> Unit
 ) {
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
+    var isFocused by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            title?.let{
+            title?.let {
                 Text(
                     text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -87,23 +84,23 @@ fun RuniqueTextField(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
+
         BasicTextField(
-            state = state,
+            value = value,
+            onValueChange = { newValue ->
+                onValueChange(newValue) // Update state
+            },
             textStyle = LocalTextStyle.current.copy(
                 color = MaterialTheme.colorScheme.onBackground
             ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = keyboardType
-            ),
-            lineLimits = TextFieldLineLimits.SingleLine,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(
                     if (isFocused) {
-                        MaterialTheme.colorScheme.primary.copy(
-                            alpha = 0.05f
-                        )
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                     } else {
                         MaterialTheme.colorScheme.surface
                     }
@@ -121,43 +118,36 @@ fun RuniqueTextField(
                 .onFocusChanged {
                     isFocused = it.isFocused
                 },
-            decorator = { innerBox ->
+            decorationBox = { innerTextField ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (startIcon != null) {
+                    startIcon?.let {
                         Icon(
-                            imageVector = startIcon,
+                            imageVector = it,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                     }
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        if (state.text.isEmpty() && !isFocused) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (value.text.isEmpty() && !isFocused) {
                             Text(
                                 text = hint,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha = 0.4f
-                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        innerBox()
+                        innerTextField()
                     }
-                    if (endIcon != null) {
+                    endIcon?.let {
                         Spacer(modifier = Modifier.width(16.dp))
                         Icon(
-                            imageVector = endIcon,
+                            imageVector = it,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp)
                         )
                     }
                 }
@@ -171,14 +161,14 @@ fun RuniqueTextField(
 private fun RuniqueTextFieldPreview() {
     RuniqueTheme {
         RuniqueTextField(
-            state = rememberTextFieldState(),
+            value = TextFieldValue(),
             startIcon = EmailIcon,
             endIcon = CheckIcon,
             hint = "example@test.com",
             title = "Email",
             additionalInfo = "Must be a valid email",
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = {}
         )
     }
 }

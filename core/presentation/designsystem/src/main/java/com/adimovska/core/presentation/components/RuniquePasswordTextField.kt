@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicSecureTextField
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.TextObfuscationMode
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -32,59 +30,57 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.adimovska.core.presentation.designsystem.EyeClosedIcon
 import com.adimovska.core.presentation.designsystem.EyeOpenedIcon
 import com.adimovska.core.presentation.designsystem.LockIcon
-import com.adimovska.core.presentation.designsystem.R
 import com.adimovska.core.presentation.designsystem.RuniqueTheme
 
 @Composable
 fun RuniquePasswordTextField(
-    state: TextFieldState,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     isPasswordVisible: Boolean,
     onTogglePasswordVisibility: () -> Unit,
     hint: String,
     title: String?,
     modifier: Modifier = Modifier,
 ) {
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
-    Column(
-        modifier = modifier
-    ) {
+    var isFocused by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            if (title != null) {
+            title?.let {
                 Text(
-                    text = title,
+                    text = it,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        BasicSecureTextField(
-            state = state,
-            textObfuscationMode = if (isPasswordVisible) {
-                TextObfuscationMode.Visible
-            } else TextObfuscationMode.Hidden,
+
+        BasicTextField(
+            value = value,
+            onValueChange = { newValue ->
+                onValueChange(newValue)
+            },
             textStyle = LocalTextStyle.current.copy(
                 color = MaterialTheme.colorScheme.onBackground
             ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(
                     if (isFocused) {
-                        MaterialTheme.colorScheme.primary.copy(
-                            alpha = 0.05f
-                        )
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                     } else {
                         MaterialTheme.colorScheme.surface
                     }
@@ -102,10 +98,9 @@ fun RuniquePasswordTextField(
                 .onFocusChanged {
                     isFocused = it.isFocused
                 },
-            decorator = { innerBox ->
+            decorationBox = { innerTextField ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -114,30 +109,23 @@ fun RuniquePasswordTextField(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(16.dp))
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        if (state.text.isEmpty() && !isFocused) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (value.text.isEmpty() && !isFocused) {
                             Text(
                                 text = hint,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha = 0.4f
-                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        innerBox()
+                        innerTextField()
                     }
                     IconButton(onClick = onTogglePasswordVisibility) {
                         Icon(
-                            imageVector = if (!isPasswordVisible) {
-                                EyeClosedIcon
-                            } else EyeOpenedIcon,
-                            contentDescription = if(isPasswordVisible) {
-                                stringResource(id = R.string.show_password)
+                            imageVector = if (!isPasswordVisible) EyeClosedIcon else EyeOpenedIcon,
+                            contentDescription = if (isPasswordVisible) {
+                                "Show password"
                             } else {
-                                stringResource(id = R.string.hide_password)
+                                "Hide password"
                             },
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -153,13 +141,14 @@ fun RuniquePasswordTextField(
 private fun RuniqueTextFieldPreview() {
     RuniqueTheme {
         RuniquePasswordTextField(
-            state = rememberTextFieldState(),
+            value = TextFieldValue(),
             hint = "example@test.com",
             title = "Email",
             modifier = Modifier
                 .fillMaxWidth(),
             isPasswordVisible = false,
-            onTogglePasswordVisibility = {}
+            onTogglePasswordVisibility = {},
+            onValueChange = {}
         )
     }
 }

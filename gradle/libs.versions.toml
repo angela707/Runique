@@ -21,6 +21,7 @@ desugar_jdk_libs = "2.1.4"
 koin = "4.0.0"
 ktor = "3.0.3"
 ktorClientLogging = "3.0.1"
+navigationCompose = "2.8.6"
 org-jetbrains-kotlin-jvm = "2.1.0"
 
 # Project versions
@@ -50,6 +51,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "compose-coil" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 #Compose testing
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
