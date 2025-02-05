@@ -25,6 +25,8 @@ navigationCompose = "2.8.6"
 coroutines = "1.9.0"
 securityCryptoKtx = "1.1.0-alpha06"
 org-jetbrains-kotlin-jvm = "2.1.0"
+coreSplashscreen = "1.0.1"
+
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -44,6 +46,7 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 #Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

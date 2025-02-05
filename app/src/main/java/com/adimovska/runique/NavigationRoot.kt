@@ -17,10 +17,11 @@ import com.adimovska.auth.presentation.register.RegisterScreenRoot
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
+    isLoggedIn: Boolean,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.Auth
+        startDestination = if (isLoggedIn) Routes.Run else Routes.Auth
     ) {
         authGraph(navController)
         runGraph(navController)
