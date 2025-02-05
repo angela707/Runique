@@ -29,6 +29,8 @@ dependencies {
     implementation(projects.run.location)
     implementation(projects.run.network)
 
+    // Crypto
+    implementation(libs.androidx.security.crypto.ktx)
 
     // core
     implementation(libs.androidx.core.ktx)
