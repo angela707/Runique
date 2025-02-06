@@ -4,6 +4,7 @@ import android.app.Application
 import com.adimovska.auth.data.di.authDataModule
 import com.adimovska.auth.presentation.di.authViewModelModule
 import com.adimovska.core.data.di.coreDataModule
+import com.adimovska.run.presentation.di.runPresentationModule
 import com.adimovska.runique.di.appModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -12,7 +13,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
-class RuniqueApp: Application() {
+class RuniqueApp : Application() {
 
     val applicationScope = CoroutineScope(SupervisorJob())
 
@@ -30,6 +31,7 @@ class RuniqueApp: Application() {
                 authViewModelModule,
                 appModule,
                 coreDataModule,
+                runPresentationModule,
             )
         }
     }

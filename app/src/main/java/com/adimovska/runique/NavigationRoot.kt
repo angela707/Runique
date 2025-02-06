@@ -1,10 +1,6 @@
 package com.adimovska.runique
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,6 +9,7 @@ import androidx.navigation.navigation
 import com.adimovska.auth.presentation.intro.IntroScreenRoot
 import com.adimovska.auth.presentation.login.LoginScreenRoot
 import com.adimovska.auth.presentation.register.RegisterScreenRoot
+import com.adimovska.run.presentation.run_overview.RunOverviewScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -85,10 +82,20 @@ private fun NavGraphBuilder.runGraph(
         startDestination = Routes.RunOverview,
     ) {
         composable<Routes.RunOverview> {
-            Text(
-                modifier = Modifier.padding(top = 64.dp),
-                text = "Run Screen"
+            RunOverviewScreenRoot(
+                onStartRunClick = {
+                    navController.navigate(Routes.ActiveRun)
+                },
+                onLogoutClick = {
+                    navController.navigate(Routes.Auth) {
+                        popUpTo(Routes.Run) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }
 }
+
+
