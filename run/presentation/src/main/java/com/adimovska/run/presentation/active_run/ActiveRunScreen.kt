@@ -34,6 +34,7 @@ import com.adimovska.core.presentation.designsystem.StartIcon
 import com.adimovska.core.presentation.designsystem.StopIcon
 import com.adimovska.run.presentation.R
 import com.adimovska.run.presentation.active_run.components.RunDataCard
+import com.adimovska.run.presentation.active_run.maps.TrackerMap
 import com.adimovska.run.presentation.util.hasLocationPermission
 import com.adimovska.run.presentation.util.hasNotificationPermission
 import com.adimovska.run.presentation.util.shouldShowLocationPermissionRationale
@@ -112,6 +113,15 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+
+            TrackerMap(
+                modifier = Modifier.fillMaxSize() ,
+                isRunFinished = state.isRunFinished,
+                currentLocation = state.currentLocation,
+                locations = state.runData.locations,
+                onSnapshot = {}
+            )
+            
             RunDataCard(
                 elapsedTime = state.elapsedTime,
                 runData = state.runData,

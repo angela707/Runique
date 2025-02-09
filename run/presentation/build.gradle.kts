@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.runique.android.feature.ui)
+    alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
@@ -13,4 +14,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.coil)
     implementation(libs.timber)
+    implementation(libs.google.maps.android.compose)
 }
