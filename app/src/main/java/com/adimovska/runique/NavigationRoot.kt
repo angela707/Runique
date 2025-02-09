@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import com.adimovska.auth.presentation.intro.IntroScreenRoot
 import com.adimovska.auth.presentation.login.LoginScreenRoot
 import com.adimovska.auth.presentation.register.RegisterScreenRoot
+import com.adimovska.run.presentation.active_run.ActiveRunScreenRoot
 import com.adimovska.run.presentation.run_overview.RunOverviewScreenRoot
 
 @Composable
@@ -92,6 +93,17 @@ private fun NavGraphBuilder.runGraph(
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable<Routes.ActiveRun> {
+            ActiveRunScreenRoot(
+                onBack = {
+                    navController.navigateUp()
+                },
+                onFinish = {
+                    navController.navigateUp()
                 }
             )
         }

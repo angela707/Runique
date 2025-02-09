@@ -33,7 +33,13 @@ fun RunOverviewScreenRoot(
     viewModel: RunOverviewViewModel = koinViewModel(),
 ) {
     RunOverviewScreen(
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                RunOverviewAction.OnStartClick -> onStartRunClick()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 }
 
