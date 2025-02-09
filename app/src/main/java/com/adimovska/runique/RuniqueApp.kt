@@ -4,6 +4,7 @@ import android.app.Application
 import com.adimovska.auth.data.di.authDataModule
 import com.adimovska.auth.presentation.di.authViewModelModule
 import com.adimovska.core.data.di.coreDataModule
+import com.adimovska.run.location.di.locationModule
 import com.adimovska.run.presentation.di.runPresentationModule
 import com.adimovska.runique.di.appModule
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,7 @@ import timber.log.Timber
 class RuniqueApp : Application() {
 
     val applicationScope = CoroutineScope(SupervisorJob())
+    // supervisor job means that each coroutine we launch cannot be independent, if one fails - all fail
 
     override fun onCreate() {
         super.onCreate()
@@ -32,6 +34,7 @@ class RuniqueApp : Application() {
                 appModule,
                 coreDataModule,
                 runPresentationModule,
+                locationModule,
             )
         }
     }

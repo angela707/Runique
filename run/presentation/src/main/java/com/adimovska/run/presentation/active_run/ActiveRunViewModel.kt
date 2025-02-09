@@ -1,13 +1,20 @@
 package com.adimovska.run.presentation.active_run
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.adimovska.run.domain.RunningTracker
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 
-class ActiveRunViewModel : ViewModel() {
+class ActiveRunViewModel(
+    private val runningTracker: RunningTracker
+) : ViewModel() {
 
     private var _state = MutableStateFlow(ActiveRunState())
     var state = _state.asStateFlow()
@@ -17,6 +24,25 @@ class ActiveRunViewModel : ViewModel() {
 
     private val hasLocationPermission = MutableStateFlow(false)
 
+
+    init {
+        hasLocationPermission
+            .onEach { hasPermission ->
+                if (hasPermission) {
+                    runningTracker.startObservingLocation()
+                } else {
+                    runningTracker.stopObservingLocation()
+                }
+            }
+            .launchIn(viewModelScope)
+
+        runningTracker
+            .currentLocation
+            .onEach { location ->
+                Timber.d("=+= New location $location ")
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onAction(action: ActiveRunAction) {
 
