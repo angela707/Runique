@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.adimovska.core.presentation.components.RuniqueActionButton
 import com.adimovska.core.presentation.components.RuniqueDialog
 import com.adimovska.core.presentation.components.RuniqueFloatingActionButton
 import com.adimovska.core.presentation.components.RuniqueOutlinedActionButton
@@ -49,6 +50,18 @@ fun ActiveRunScreenRoot(
 ) {
     val state by viewModel.state.collectAsState()
 
+    RequestPermissions(
+        state = state,
+        onAction = viewModel::onAction
+    )
+
+    RunPausedDialog(
+        shouldTrack = state.shouldTrack,
+        hasStartedRunning = state.hasStartedRunning,
+        isSavingRun = state.isSavingRun,
+        onAction = viewModel::onAction
+    )
+
     ActiveRunScreen(
         state = state,
         onAction = { action ->
@@ -72,11 +85,6 @@ private fun ActiveRunScreen(
     state: ActiveRunState,
     onAction: (ActiveRunAction) -> Unit
 ) {
-
-    RequestPermissions(
-        state = state,
-        onAction = onAction
-    )
 
     RuniqueScaffold(
         withGradient = false,
@@ -115,13 +123,13 @@ private fun ActiveRunScreen(
         ) {
 
             TrackerMap(
-                modifier = Modifier.fillMaxSize() ,
+                modifier = Modifier.fillMaxSize(),
                 isRunFinished = state.isRunFinished,
                 currentLocation = state.currentLocation,
                 locations = state.runData.locations,
                 onSnapshot = {}
             )
-            
+
             RunDataCard(
                 elapsedTime = state.elapsedTime,
                 runData = state.runData,
@@ -132,7 +140,44 @@ private fun ActiveRunScreen(
             )
         }
     }
+}
 
+@Composable
+private fun RunPausedDialog(
+    shouldTrack: Boolean,
+    hasStartedRunning: Boolean,
+    isSavingRun: Boolean,
+    onAction: (ActiveRunAction) -> Unit
+) {
+    if (!shouldTrack && hasStartedRunning) {
+        RuniqueDialog(
+            title = stringResource(id = R.string.running_is_paused),
+            onDismiss = {
+                onAction(ActiveRunAction.OnResumeRunClick)
+            },
+            description = stringResource(id = R.string.resume_or_finish_run),
+            primaryButton = {
+                RuniqueActionButton(
+                    text = stringResource(id = R.string.resume),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnResumeRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            },
+            secondaryButton = {
+                RuniqueOutlinedActionButton(
+                    text = stringResource(id = R.string.finish),
+                    isLoading = isSavingRun,
+                    onClick = {
+                        onAction(ActiveRunAction.OnFinishRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        )
+    }
 }
 
 @Composable

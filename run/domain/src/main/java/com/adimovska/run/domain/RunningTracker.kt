@@ -53,7 +53,7 @@ class RunningTracker(
                 if (!isTracking) {
                     val newList = buildList {
                         addAll(runData.value.locations)
-                        add(emptyList<LocationTimestamp>())
+                        add(emptyList<LocationTimestamp>()) // if we pause the run, we want an empty list)
                     }.toList()
                     _runData.update {
                         it.copy(
