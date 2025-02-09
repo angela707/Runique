@@ -1,15 +1,18 @@
 package com.adimovska.runique
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.adimovska.auth.presentation.intro.IntroScreenRoot
 import com.adimovska.auth.presentation.login.LoginScreenRoot
 import com.adimovska.auth.presentation.register.RegisterScreenRoot
 import com.adimovska.run.presentation.active_run.ActiveRunScreenRoot
+import com.adimovska.run.presentation.active_run.service.ActiveRunService
 import com.adimovska.run.presentation.run_overview.RunOverviewScreenRoot
 
 @Composable
@@ -97,10 +100,31 @@ private fun NavGraphBuilder.runGraph(
             )
         }
 
-        composable<Routes.ActiveRun> {
+        composable<Routes.ActiveRun>(
+            deepLinks = listOf(
+                navDeepLink<Routes.ActiveRun>(
+                    basePath = "runique://active_run"
+                )
+            )
+        ) {
+            val context = LocalContext.current
             ActiveRunScreenRoot(
                 onBack = {
                     navController.navigateUp()
+                },
+                onServiceToggle = { shouldServiceRun ->
+                    if (shouldServiceRun) {
+                        context.startService(
+                            ActiveRunService.createStartIntent(
+                                context = context,
+                                activityClass = MainActivity::class.java
+                            )
+                        )
+                    } else {
+                        context.startService(
+                            ActiveRunService.createStopIntent(context = context)
+                        )
+                    }
                 },
                 onFinish = {
                     navController.navigateUp()

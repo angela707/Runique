@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adimovska.core.presentation.components.RuniqueActionButton
 import com.adimovska.core.presentation.components.RuniqueDialog
 import com.adimovska.core.presentation.components.RuniqueFloatingActionButton
@@ -36,6 +37,7 @@ import com.adimovska.core.presentation.designsystem.StopIcon
 import com.adimovska.run.presentation.R
 import com.adimovska.run.presentation.active_run.components.RunDataCard
 import com.adimovska.run.presentation.active_run.maps.TrackerMap
+import com.adimovska.run.presentation.active_run.service.ActiveRunService
 import com.adimovska.run.presentation.util.hasLocationPermission
 import com.adimovska.run.presentation.util.hasNotificationPermission
 import com.adimovska.run.presentation.util.shouldShowLocationPermissionRationale
@@ -46,6 +48,7 @@ import org.koin.androidx.compose.koinViewModel
 fun ActiveRunScreenRoot(
     onFinish: () -> Unit,
     onBack: () -> Unit,
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -60,6 +63,12 @@ fun ActiveRunScreenRoot(
         hasStartedRunning = state.hasStartedRunning,
         isSavingRun = state.isSavingRun,
         onAction = viewModel::onAction
+    )
+
+    ConfigureService(
+        isRunFinished = state.isRunFinished,
+        shouldTrack = state.shouldTrack,
+        onServiceToggle = onServiceToggle
     )
 
     ActiveRunScreen(
@@ -77,6 +86,28 @@ fun ActiveRunScreenRoot(
             viewModel.onAction(action)
         }
     )
+}
+
+@Composable
+fun ConfigureService(
+    isRunFinished: Boolean,
+    shouldTrack: Boolean,
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
+    ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = isRunFinished) {
+        if (isRunFinished) {
+            onServiceToggle(false)
+        }
+    }
+
+    val isServiceActive by ActiveRunService.isServiceActive.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = shouldTrack, isServiceActive) {
+        if (context.hasLocationPermission() && shouldTrack && !isServiceActive) {
+            onServiceToggle(true)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
