@@ -11,7 +11,7 @@ object Timer {
         return flow {
             var lastEmitTime = System.currentTimeMillis()
             while (true) {
-                delay(200L)
+                delay(500L)
                 val currentTime = System.currentTimeMillis()
                 val elapsedTime = currentTime - lastEmitTime
                 emit(elapsedTime.milliseconds)

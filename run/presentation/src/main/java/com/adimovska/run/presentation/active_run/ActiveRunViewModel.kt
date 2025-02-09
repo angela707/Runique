@@ -3,6 +3,7 @@ package com.adimovska.run.presentation.active_run
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adimovska.run.domain.RunningTracker
+import com.adimovska.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +20,13 @@ class ActiveRunViewModel(
     private val runningTracker: RunningTracker
 ) : ViewModel() {
 
-    private var _state = MutableStateFlow(ActiveRunState())
+    private var _state = MutableStateFlow(
+        ActiveRunState(
+            shouldTrack = ActiveRunService.isServiceActive.value && runningTracker.isTracking.value,
+            hasStartedRunning = ActiveRunService.isServiceActive.value
+        )
+    )
+
     var state = _state.asStateFlow()
 
     private val eventChannel = Channel<ActiveRunEvent>()
@@ -152,6 +159,13 @@ class ActiveRunViewModel(
                     )
                 }
             }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if(!ActiveRunService.isServiceActive.value) {
+            runningTracker.stopObservingLocation()
         }
     }
 }
