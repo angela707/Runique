@@ -29,7 +29,8 @@ coreSplashscreen = "1.0.1"
 gmsLocation = "21.3.0"
 maps = "4.3.3"
 secretsPlugin = "2.0.1"
-
+work = "2.10.0"
+kotlinx-serialization = "1.7.3"
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -50,6 +51,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 #Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -64,6 +66,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 
 #Kotlinx
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
 
 #Compose testing
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }

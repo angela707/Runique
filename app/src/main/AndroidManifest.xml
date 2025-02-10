@@ -32,6 +32,21 @@
                 <data android:host="active_run" android:scheme="runique" />
             </intent-filter>
         </activity>
+
+
+<!--        Makes sure that the work manager is not initialized with the default parameters but the ones we have provided -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+
     </application>
 
 </manifest>
