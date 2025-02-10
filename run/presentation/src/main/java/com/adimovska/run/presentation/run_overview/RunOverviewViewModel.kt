@@ -2,9 +2,11 @@ package com.adimovska.run.presentation.run_overview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adimovska.core.domain.SessionStorage
 import com.adimovska.core.domain.run.RunRepository
 import com.adimovska.core.domain.run.SyncRunScheduler
 import com.adimovska.run.presentation.run_overview.mapper.toRunUi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +17,9 @@ import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
     private val runRepository: RunRepository,
-    private val syncRunScheduler: SyncRunScheduler
+    private val syncRunScheduler: SyncRunScheduler,
+    private val applicationScope: CoroutineScope,
+    private val sessionStorage: SessionStorage
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(RunOverviewState())
@@ -56,5 +60,12 @@ class RunOverviewViewModel(
     }
 
     private fun logout() {
+        // clear the db, execute log out call, cancel all pending syncs, clear session storage
+        applicationScope.launch {
+            syncRunScheduler.cancelAllSyncs()
+            runRepository.deleteAllRuns()
+            runRepository.logout()
+            sessionStorage.set(null)
+        }
     }
 }

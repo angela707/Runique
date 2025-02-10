@@ -118,18 +118,6 @@ class OfflineFirstRunRepository(
         localRunDataSource.deleteAllRuns()
     }
 
-    override suspend fun logout(): EmptyResult<DataError.Network> {
-        val result = client.get<Unit>(
-            route = "/logout"
-        ).asEmptyDataResult()
-
-        client.authProviders.filterIsInstance<BearerAuthProvider>()
-            .firstOrNull()
-            ?.clearToken()
-
-        return result
-    }
-
     override suspend fun syncPendingRuns() {
         withContext(Dispatchers.IO) {
             val userId = sessionStorage.get()?.userId ?: return@withContext
@@ -179,4 +167,16 @@ class OfflineFirstRunRepository(
         }
     }
 
+    override suspend fun logout(): EmptyResult<DataError.Network> {
+        val result = client.get<Unit>(
+            route = "/logout"
+        ).asEmptyDataResult()
+
+        //explicitly tell ktor to clear our token from the headers
+        client.authProviders.filterIsInstance<BearerAuthProvider>()
+            .firstOrNull()
+            ?.clearToken()
+
+        return result
+    }
 }
