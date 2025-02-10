@@ -9,6 +9,7 @@ import com.adimovska.core.domain.run.RemoteRunDataSource
 import com.adimovska.core.domain.run.Run
 import com.adimovska.core.domain.run.RunId
 import com.adimovska.core.domain.run.RunRepository
+import com.adimovska.core.domain.run.SyncRunScheduler
 import com.adimovska.core.domain.util.DataError
 import com.adimovska.core.domain.util.EmptyResult
 import com.adimovska.core.domain.util.Result
@@ -29,7 +30,8 @@ class OfflineFirstRunRepository(
     private val applicationScope: CoroutineScope,
     private val runPendingSyncDao: RunPendingSyncDao,
     private val sessionStorage: SessionStorage,
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val syncRunScheduler: SyncRunScheduler
 ) : RunRepository {
 
     override fun getRuns(): Flow<List<Run>> {
@@ -64,7 +66,16 @@ class OfflineFirstRunRepository(
 
         return when (remoteResult) {
             is Result.Error -> {
-                //todo change
+                applicationScope.launch {
+
+                    syncRunScheduler.scheduleSync(
+                        type = SyncRunScheduler.SyncType.CreateRun(
+                            run = runWithId,
+                            mapPictureBytes = mapPicture
+                        )
+                    )
+                }.join()
+
                 Result.Success(Unit)
             }
 
@@ -92,6 +103,15 @@ class OfflineFirstRunRepository(
             remoteRunDataSource.deleteRun(id)
         }.await()
 
+        if (remoteResult is Result.Error) {
+            applicationScope.launch {
+                syncRunScheduler.scheduleSync(
+                    type = SyncRunScheduler.SyncType.DeleteRun(
+                        runId = id
+                    )
+                )
+            }.join()
+        }
     }
 
     override suspend fun deleteAllRuns() {

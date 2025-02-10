@@ -3,6 +3,7 @@ package com.adimovska.run.presentation.run_overview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adimovska.core.domain.run.RunRepository
+import com.adimovska.core.domain.run.SyncRunScheduler
 import com.adimovska.run.presentation.run_overview.mapper.toRunUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,9 +11,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
     private val runRepository: RunRepository,
+    private val syncRunScheduler: SyncRunScheduler
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(RunOverviewState())
@@ -29,6 +32,12 @@ class RunOverviewViewModel(
         viewModelScope.launch {
             runRepository.syncPendingRuns()
             runRepository.fetchRuns()
+        }
+
+        viewModelScope.launch {
+            syncRunScheduler.scheduleSync(
+                type = SyncRunScheduler.SyncType.FetchRuns(30.minutes)
+            )
         }
     }
 
