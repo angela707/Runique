@@ -15,7 +15,10 @@ val appModule = module {
         EncryptedSharedPreferences(
             androidApplication(),
             "auth_pref",
-            MasterKey(androidApplication()),
+            MasterKey.Builder(androidApplication())
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            ,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )

@@ -26,6 +26,10 @@ class RunOverviewViewModel(
                 _state.update { it.copy(runs = runsUi) }
             }.launchIn(viewModelScope)
 
+        viewModelScope.launch {
+            runRepository.syncPendingRuns()
+            runRepository.fetchRuns()
+        }
     }
 
     fun onAction(action: RunOverviewAction) {
