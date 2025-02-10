@@ -10,4 +10,5 @@ plugins {
 
     alias(libs.plugins.mapsplatform.secrets.plugin) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.android.dynamic.feature) apply false
 }
