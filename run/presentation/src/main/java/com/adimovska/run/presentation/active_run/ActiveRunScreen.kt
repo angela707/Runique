@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -35,6 +36,7 @@ import com.adimovska.core.presentation.components.RuniqueToolbar
 import com.adimovska.core.presentation.designsystem.RuniqueTheme
 import com.adimovska.core.presentation.designsystem.StartIcon
 import com.adimovska.core.presentation.designsystem.StopIcon
+import com.adimovska.core.presentation.ui.ObserveAsEvents
 import com.adimovska.run.presentation.R
 import com.adimovska.run.presentation.active_run.components.RunDataCard
 import com.adimovska.run.presentation.active_run.maps.TrackerMap
@@ -54,6 +56,21 @@ fun ActiveRunScreenRoot(
     viewModel: ActiveRunViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when(event) {
+            is ActiveRunEvent.Error -> {
+                Toast.makeText(
+                    context,
+                    event.error.asString(context),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            ActiveRunEvent.RunSaved -> onFinish()
+        }
+    }
 
     RequestPermissions(
         state = state,

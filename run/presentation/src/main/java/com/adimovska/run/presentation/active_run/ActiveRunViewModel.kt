@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adimovska.core.domain.location.Location
 import com.adimovska.core.domain.run.Run
+import com.adimovska.core.domain.run.RunRepository
+import com.adimovska.core.domain.util.Result
+import com.adimovska.core.presentation.ui.asUiText
 import com.adimovska.run.domain.LocationDataCalculator
 import com.adimovska.run.domain.RunningTracker
 import com.adimovska.run.presentation.active_run.service.ActiveRunService
@@ -24,7 +27,8 @@ import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
 class ActiveRunViewModel(
-    private val runningTracker: RunningTracker
+    private val runningTracker: RunningTracker,
+    private val runRepository: RunRepository,
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(
@@ -214,8 +218,15 @@ class ActiveRunViewModel(
 
             runningTracker.finishRun()
 
-            //todo save in db
+            when (val result = runRepository.upsertRun(run, mapPictureBytes)) {
+                is Result.Error -> {
+                    eventChannel.send(ActiveRunEvent.Error(result.error.asUiText()))
+                }
 
+                is Result.Success -> {
+                    eventChannel.send(ActiveRunEvent.RunSaved)
+                }
+            }
             _state.update {
                 it.copy(isSavingRun = false)
             }
