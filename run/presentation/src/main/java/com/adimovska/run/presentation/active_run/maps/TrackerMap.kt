@@ -5,17 +5,23 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adimovska.core.domain.location.Location
@@ -24,14 +30,23 @@ import com.adimovska.core.presentation.designsystem.RunIcon
 import com.adimovska.run.presentation.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.ktx.awaitSnapshot
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun TrackerMap(
     modifier: Modifier = Modifier,
@@ -80,7 +95,25 @@ fun TrackerMap(
         }
     }
 
+    var triggerCapture by remember {
+        mutableStateOf(false)
+    }
+    var createSnapshotJob: Job? = remember {
+        null
+    }
+
     GoogleMap(
+        modifier = if (isRunFinished) {
+            modifier
+                .width(300.dp)  // we change the ratio to take the snapshot
+                .aspectRatio(16 / 9f)
+                .alpha(0f) // make it invisible to the user so i does not look weird
+                .onSizeChanged {
+                    if (it.width >= 300) {
+                        triggerCapture = true
+                    }
+                }
+        } else modifier,
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
             mapStyleOptions = mapStyle
@@ -89,6 +122,40 @@ fun TrackerMap(
             zoomControlsEnabled = false
         )
     ) {
+
+        // refocus and rescale map to take a snapshot for finished run
+        MapEffect(locations, isRunFinished, triggerCapture, createSnapshotJob) { map ->
+            if (isRunFinished && triggerCapture && createSnapshotJob == null) {
+                triggerCapture = false
+
+                val boundsBuilder = LatLngBounds.builder()
+                locations.flatten().forEach { location ->
+                    boundsBuilder
+                        .include(
+                            LatLng(
+                                location.location.location.lat,
+                                location.location.location.long,
+                            )
+                        )
+                }
+                map.moveCamera( // not animate because we want an instant move
+                    CameraUpdateFactory.newLatLngBounds(
+                        boundsBuilder.build(),
+                        100
+                    )
+                )
+
+                map.setOnCameraIdleListener { //we need to make sure the camera finished moving
+                    createSnapshotJob?.cancel()
+                    createSnapshotJob = GlobalScope.launch {
+                        // Make sure the map is sharp and focused before taking
+                        // the screenshot
+                        delay(500L)
+                        map.awaitSnapshot()?.let(onSnapshot)
+                    }
+                }
+            }
+        }
 
         RuniquePolylines(
             locations = locations

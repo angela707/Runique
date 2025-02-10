@@ -2,6 +2,9 @@ package com.adimovska.run.presentation.active_run
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adimovska.core.domain.location.Location
+import com.adimovska.core.domain.run.Run
+import com.adimovska.run.domain.LocationDataCalculator
 import com.adimovska.run.domain.RunningTracker
 import com.adimovska.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
@@ -15,6 +18,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import kotlin.math.roundToInt
 
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker
@@ -116,7 +123,12 @@ class ActiveRunViewModel(
             }
 
             ActiveRunAction.OnFinishRunClick -> {
-
+                _state.update {
+                    it.copy(
+                        isRunFinished = true,
+                        isSavingRun = true
+                    )
+                }
             }
 
             ActiveRunAction.OnResumeRunClick -> {
@@ -159,12 +171,60 @@ class ActiveRunViewModel(
                     )
                 }
             }
+
+            is ActiveRunAction.OnRunProcessed -> {
+                finishRun(action.mapPictureBytes)
+            }
+        }
+    }
+
+    private fun finishRun(mapPictureBytes: ByteArray) {
+        val locations = state.value.runData.locations
+        if (locations.isEmpty() || locations.first().size <= 1) {
+            _state.update {
+                it.copy(
+                    isSavingRun = false
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            val run = Run(
+                id = null,
+                duration = state.value.elapsedTime,
+                dateTimeUtc = ZonedDateTime.now()
+                    .withZoneSameInstant(ZoneId.of("UTC")),
+                distanceMeters = state.value.runData.distanceMeters,
+                location = state.value.currentLocation ?: Location(0.0, 0.0),
+                maxSpeedKmh = LocationDataCalculator.getMaxSpeedKmh(locations),
+                totalElevationMeters = LocationDataCalculator.getTotalElevationMeters(locations),
+                mapPictureUrl = null,
+                avgHeartRate = if (state.value.runData.heartRates.isEmpty()) {
+                    null
+                } else {
+                    state.value.runData.heartRates.average().roundToInt()
+                },
+                maxHeartRate = if (state.value.runData.heartRates.isEmpty()) {
+                    null
+                } else {
+                    state.value.runData.heartRates.max()
+                }
+            )
+
+            runningTracker.finishRun()
+
+            //todo save in db
+
+            _state.update {
+                it.copy(isSavingRun = false)
+            }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        if(!ActiveRunService.isServiceActive.value) {
+        if (!ActiveRunService.isServiceActive.value) {
             runningTracker.stopObservingLocation()
         }
     }

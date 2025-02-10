@@ -2,6 +2,7 @@ package com.adimovska.run.presentation.active_run
 
 import android.Manifest
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -43,6 +44,7 @@ import com.adimovska.run.presentation.util.hasNotificationPermission
 import com.adimovska.run.presentation.util.shouldShowLocationPermissionRationale
 import com.adimovska.run.presentation.util.shouldShowNotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun ActiveRunScreenRoot(
@@ -93,7 +95,7 @@ fun ConfigureService(
     isRunFinished: Boolean,
     shouldTrack: Boolean,
     onServiceToggle: (isServiceRunning: Boolean) -> Unit,
-    ) {
+) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = isRunFinished) {
@@ -158,7 +160,18 @@ private fun ActiveRunScreen(
                 isRunFinished = state.isRunFinished,
                 currentLocation = state.currentLocation,
                 locations = state.runData.locations,
-                onSnapshot = {}
+                onSnapshot = { bmp ->
+                    val stream = ByteArrayOutputStream()
+                    stream.use {
+                        bmp.compress(
+                            Bitmap.CompressFormat.JPEG,
+                            80,
+                            it
+                        )
+                    }
+
+                    onAction(ActiveRunAction.OnRunProcessed(stream.toByteArray()))
+                }
             )
 
             RunDataCard(
