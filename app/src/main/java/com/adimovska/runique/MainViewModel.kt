@@ -36,4 +36,10 @@ class MainViewModel(
             }
         }
     }
+
+    fun setAnalyticsDialogVisibility(isVisible: Boolean) {
+        _state.update {
+            it.copy(showAnalyticsInstallDialog = isVisible)
+        }
+    }
 }

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.runique.android.dynamic.feature)
+    alias(libs.plugins.kotlin.serialization)
 
 }
 android {
@@ -13,5 +14,6 @@ dependencies {
     implementation(projects.core.database)
 
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     api(projects.analytics.presentation)
 }

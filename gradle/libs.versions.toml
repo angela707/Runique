@@ -31,6 +31,7 @@ maps = "4.3.3"
 secretsPlugin = "2.0.1"
 work = "2.10.0"
 kotlinx-serialization = "1.7.3"
+playFeatureDelivery = "2.1.0"
 
 # Project versions
 projectApplicationId = "com.adimovska.runique"
@@ -112,6 +113,11 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 # Map and Location
 google-android-gms-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "gmsLocation" }
 google-maps-android-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
+
+# Dynamic features
+play-feature-delivery = { module = "com.google.android.play:feature-delivery", version.ref = "playFeatureDelivery" }
+play-feature-delivery-ktx = { module = "com.google.android.play:feature-delivery-ktx", version.ref = "playFeatureDelivery" }
+
 
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
